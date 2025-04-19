@@ -1,0 +1,52 @@
+name: PDF OCR Processing
+
+on:
+  workflow_dispatch:
+    inputs:
+      pdf_url:
+        description: 'PDF文件下载链接'
+        required: true
+        type: string
+      script_choice:
+        description: '选择处理脚本 (pocr|pocr-pixmap|pocr-inplace)'
+        required: true
+        type: choice
+        options:
+          - pocr
+          - pocr-pixmap
+          - pocr-inplace
+      options:
+        description: '附加参数（如 -p -c 等）'
+        required: false
+        type: string
+
+jobs:
+  pdf-ocr:
+    runs-on: ubuntu-latest
+    steps:
+    - name: Setup Python
+      uses: actions/setup-python@v4
+      with:
+        python-version: '3.10'
+
+    - name: Download PDF file
+      run: |
+        curl -LsS -o input.pdf "${{ github.event.inputs.pdf_url }}"
+
+    - name: Install dependencies
+      run: |
+        pip install paddlepaddle==3.0.0rc1 -i https://www.paddlepaddle.org.cn/packages/stable/cpu/
+        pip install paddleocr PyMuPDF opencv-python
+
+    - name: Run OCR processing
+      env:
+        SCRIPT_NAME: ${{ github.event.inputs.script_choice }}.py
+        ARGS: ${{ github.event.inputs.options }}
+      run: |
+        python3 "$SCRIPT_NAME" ${ARGS} input.pdf output.pdf
+
+    - name: Upload results
+      uses: actions/upload-artifact@v3
+      with:
+        name: ocr-output
+        path: output.pdf
