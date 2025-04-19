@@ -34,7 +34,10 @@ jobs:
 
     - name: Download PDF file
       run: |
-        curl -LsS -o input.pdf "${{ github.event.inputs.pdf_url }}"
+        curl -LfsS -o input.pdf "${{ github.event.inputs.pdf_url }}"
+        ls -lh input.pdf
+        file input.pdf
+        head -n 20 input.pdf
 
     - name: Install dependencies
       run: |
