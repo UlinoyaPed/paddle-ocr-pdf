@@ -35,7 +35,7 @@ jobs:
 
     - name: Install dependencies
       run: |
-        pip install paddlepaddle==3.0.0rc1 -i https://www.paddlepaddle.org.cn/packages/stable/cpu/
+        pip install --user paddlepaddle==3.0.0rc1 -i https://www.paddlepaddle.org.cn/packages/stable/cpu/
         pip install paddleocr PyMuPDF opencv-python
 
     - name: Run OCR processing
@@ -46,7 +46,7 @@ jobs:
         python3 "$SCRIPT_NAME" ${ARGS} input.pdf output.pdf
 
     - name: Upload results
-      uses: actions/upload-artifact@v3
+      uses: actions/upload-artifact@v4
       with:
         name: ocr-output
         path: output.pdf
